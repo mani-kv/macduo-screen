@@ -77,3 +77,9 @@ An offscreen white-source GPU regression verifies a black top and outer side, in
 Reviewed all six user-provided reference images. Replaced the multiplied rectangular edge masks with a single rounded extinction field, a gently bowed top boundary, and broader side/top feathers. Feathering starts earlier than the perspective displacement, so early motion does not reveal a sharp rectangular frame. The rational stretch varies with distance from the hinge; frost builds earlier and is strongest in the upper corners, with smooth interpolation between Gaussian levels. No temporal noise or animation was added.
 
 The white-source GPU regression additionally checks rounded symmetric corner attenuation and a broad partial-brightness band at 10% progress. Existing open/closed endpoints, black exterior, Retina rendering, and exact reversal remain covered. Visual review uses generated sample images only; the user continues physical testing.
+
+## Smooth entry at the lid threshold
+
+The fullscreen window previously appeared at full opacity on the first nonzero progress value, immediately exposing the snapshot and its dark edge mask. The overlay now blends in using a smoothstep opacity curve over the first 10% of normalized lid travel and reverses the same curve on opening. The image is marked for display before the window is revealed. This adds no timer-based animation and preserves the established appearance after the entry interval.
+
+Thirteen logic tests pass, including low opacity on the first degree below representative thresholds, monotonic entry, and symmetric reversal. The optimized app build passes. Physical entry smoothness remains for user testing; no Computer Use was performed.
