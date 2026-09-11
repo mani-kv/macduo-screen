@@ -4,7 +4,11 @@ A native macOS menu bar app that frosts and shades the built-in display as you c
 
 The physical lid angle is the animation timeline: holding the lid holds the visual state. There are no duration-based closing animations. The app reads the Apple HID sensor at 60 polls/s, takes one desktop snapshot per closing interaction, and renders changes with Metal and Metal Performance Shaders. It does not continuously record the screen or save captured desktop images.
 
-## Run
+## Download
+
+Download the Apple Silicon macOS 14+ app from [the 0.1.0 preview release](https://github.com/mani-kv/macduo-screen/releases/tag/v0.1.0). Unzip it, move **MacFold.app** to Applications, and open it. This preview is ad-hoc signed and **not notarized**; installation details and known limitations are in the [release notes](docs/releases/0.1.0.md).
+
+## Run from source
 
 Requires macOS 14 or later and a MacBook exposing the Apple lid-angle HID sensor. Building requires Swift 6 or later via Xcode or Command Line Tools; no third-party dependencies.
 
@@ -90,5 +94,7 @@ LidSensor / HIDAngleProvider → FoldController → FoldSession → OverlayWindo
 The sensor report is an undocumented hardware interface, so support must be detected on each Mac. This prototype does not prevent normal lid-close sleep. Full close/wake behavior, multiple Spaces, and end-to-end perceived latency need physical testing on the target setup. A snapshot freezes desktop content during the effect, so a video or clock underneath will jump back to its live state when reopening.
 
 The default build is signed ad hoc for local use, with App Sandbox disabled for HID access. It is not notarized for distribution. For a distributable build, set `SIGNING_IDENTITY` to an installed Developer ID identity and complete Apple's notarization process. Builds use the host architecture.
+
+To build a versioned release ZIP and SHA-256 checksum in `dist/`, run `./scripts/release.sh`. The version comes from `Resources/Info.plist`; the architecture comes from the built executable. Run `./scripts/test.sh` before publishing, and disclose signing/notarization status in the release notes. Release binaries are attached to GitHub Releases rather than committed to Git.
 
 The scripts prefer Command Line Tools without changing global `xcode-select`, working around the broken Xcode launcher found on this development machine. Set `DEVELOPER_DIR` to override. `scripts/test.sh` supplies the framework paths required by the installed Command Line Tools' Swift Testing runtime.
