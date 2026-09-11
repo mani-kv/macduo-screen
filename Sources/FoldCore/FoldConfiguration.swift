@@ -38,6 +38,15 @@ public struct FoldConfiguration: Codable, Equatable {
         return min(1, max(0, (safe.startAngle - angle) / (safe.startAngle - safe.endAngle)))
     }
 
+    /// Blend the live desktop into the snapshot over the first 10% of lid
+    /// travel. Zero slope at either end avoids a visible threshold switch.
+    /// This is angle-driven, so holding/reversing the lid holds/reverses it.
+    public static func overlayOpacity(for progress: Double) -> Double {
+        guard progress.isFinite else { return 0 }
+        let t = min(1, max(0, progress / 0.10))
+        return t * t * (3 - 2 * t)
+    }
+
     private static func clamp(_ value: Double, _ range: ClosedRange<Double>, fallback: Double) -> Double {
         min(range.upperBound, max(range.lowerBound, value.isFinite ? value : fallback))
     }

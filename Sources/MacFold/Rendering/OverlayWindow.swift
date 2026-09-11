@@ -82,13 +82,21 @@ final class OverlayWindow {
         }
         debug.isHidden = !configuration.showDebug
         debug.stringValue = String(format: "  %.0f°  ·  %.3f progress  ·  %.0f FPS (on change)  ", angle, progress, fps)
-        if !window.isVisible { window.orderFrontRegardless() }
+        // The first changed sensor degree must not expose a fully opaque
+        // snapshot and black edge mask in one step. AppKit opacity follows
+        // angle directly; there is no duration-based animation or tail.
+        window.alphaValue = FoldConfiguration.overlayOpacity(for: progress)
         view.needsDisplay = true
+        if !window.isVisible {
+            window.displayIfNeeded()
+            window.orderFrontRegardless()
+        }
         return true
     }
 
     func hide() {
         window.orderOut(nil)
+        window.alphaValue = 0
         view.image = nil
         renderer.clear()
     }

@@ -2,6 +2,24 @@ import Testing
 @testable import FoldCore
 
 struct FoldCoreTests {
+    @Test func overlayEntersGraduallyAndReversesAtSameAngle() {
+        #expect(FoldConfiguration.overlayOpacity(for: 0) == 0)
+        #expect(FoldConfiguration.overlayOpacity(for: 0.05) == 0.5)
+        #expect(FoldConfiguration.overlayOpacity(for: 0.1) == 1)
+        #expect(FoldConfiguration.overlayOpacity(for: 1) == 1)
+        #expect(FoldConfiguration.overlayOpacity(for: .nan) == 0)
+        for start in [57.0, 88.0, 90.0] {
+            var config = FoldConfiguration()
+            config.startAngle = start
+            config.endAngle = 0
+            let first = FoldConfiguration.overlayOpacity(for: config.progress(for: start - 1))
+            #expect(first > 0 && first < 0.1)
+            let closing = (0...10).map { FoldConfiguration.overlayOpacity(for: Double($0) / 100) }
+            let reopening = (0...10).reversed().map { FoldConfiguration.overlayOpacity(for: Double($0) / 100) }
+            #expect(closing == Array(reopening.reversed()))
+            #expect(zip(closing, closing.dropFirst()).allSatisfy { $0 <= $1 })
+        }
+    }
     @Test func duoLookPreservesUserThresholdsAndControls() {
         var config = FoldConfiguration()
         config.startAngle = 57
