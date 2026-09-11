@@ -1,5 +1,19 @@
 # Prototype validation — September 10, 2026
 
+## Follow-up: effect disappears on switching Spaces
+
+The active-Space notification previously only reset the session and hid the overlay, leaving restoration to a subsequent sensor or Test Desktop slider event. It now invalidates the old capture and immediately reapplies the current preview/lid angle to capture the new desktop. Display-configuration changes use the same refresh path.
+
+Manual verification pending: in Test Desktop, hold the slider at 40° (or below the configured start angle), switch between two desktops and a full-screen app, and confirm the effect returns with the destination desktop's content without touching the slider. Repeat with the physical lid held still, and switch rapidly while reopening to check that stale captures do not restore the effect. Above the start threshold or while paused, switching Spaces should leave the overlay hidden.
+
+Verification: `git diff --check` passed. Tests could not start: Command Line Tools' `swift-package` aborts on a missing BuildServerProtocol symbol, and the Xcode fallback fails to load its libraries due to a missing `_XPCTypeBool` symbol. The change has not been built, installed, or visually verified.
+
+Build recovery: the wrapper now detects the broken CLT SwiftPM and invokes Xcode's standalone Swift directly, retaining CLT developer tools and explicitly selecting its `MacOSX.sdk` (26.5). This avoids automatic selection of the leftover 27.0 SDK, which requires Swift 6.4 instead of the installed 6.3.3. Tests use Xcode's matching platform Testing framework rather than the mismatched CLT framework. All 13 tests and the optimized app build passed. The signed app was verified, installed, and opened at `/Applications/MacFold.app`. Spaces behavior remains for manual verification by the user.
+
+The user subsequently confirmed switching Spaces works. System tooling repair identified an Xcode 16.1 `XcodeSystemResources` receipt alongside Xcode 26.6. Installing the Apple-signed 26.6 package bundled with Xcode restored `xcodebuild` and `otool`. Apple's offered Command Line Tools 27.0 update installed successfully, aligning Swift 6.4, SwiftPM, and the selected 27.0 SDK. All 13 tests passed separately under Xcode 26.6 and the updated CLT without invoking the fallback. The CLT release app build and signature verification passed; its build emits non-fatal missing developer search-path warnings. Xcode's `-runFirstLaunch` setup was started separately and awaits administrator authentication; the existing installed MacFold app was not replaced during this tooling repair.
+
+Release 0.1.1 (build 2): all 13 tests passed with Xcode 26.6. The optimized arm64 archive passed SHA-256 verification, extraction, strict signature verification, and version/architecture inspection. The extracted app passed the offscreen darkness-mask and Retina checks, eight sample frames, full-black closure, and exact reverse-angle reproduction. Release notes disclose ad-hoc signing, lack of notarization, and the remaining physical/full-screen validation limits.
+
 ## Passed
 
 - Swift debug and optimized release builds on macOS 26.6.2 / Mac15,13, using Swift 6.3.3 Command Line Tools.

@@ -6,7 +6,7 @@ The physical lid angle is the animation timeline: holding the lid holds the visu
 
 ## Download
 
-Download the Apple Silicon macOS 14+ app from [the 0.1.0 preview release](https://github.com/mani-kv/macduo-screen/releases/tag/v0.1.0). Unzip it, move **MacFold.app** to Applications, and open it. This preview is ad-hoc signed and **not notarized**; installation details and known limitations are in the [release notes](docs/releases/0.1.0.md).
+Download the Apple Silicon macOS 14+ app from [the 0.1.1 preview release](https://github.com/mani-kv/macduo-screen/releases/tag/v0.1.1). Unzip it, move **MacFold.app** to Applications, and open it. This preview is ad-hoc signed and **not notarized**; installation details and known limitations are in the [release notes](docs/releases/0.1.1.md).
 
 ## Run from source
 
@@ -85,6 +85,7 @@ LidSensor / HIDAngleProvider → FoldController → FoldSession → OverlayWindo
 - `LidSensor` is independent of AppKit and exposes `LidAngleProvider` callbacks. Invalid reports fail safely; missing devices retry every two seconds.
 - `FoldCore` owns validated settings and a deterministic session state machine. Generation tokens discard screenshots that finish after reopening, disabling, sleep, or a display change.
 - The click-through overlay covers only the built-in display, including full-screen Spaces. External displays remain usable. It hides and releases its textures above the start threshold, when disabled, on sleep/session deactivation, and on sensor failure.
+- Switching Spaces discards the previous desktop snapshot and immediately requests a new one at the current lid or Test Desktop angle. The overlay briefly hides while the new snapshot is prepared.
 - Raw whole-degree readings drive rendering directly. The validated sensor was stable while held; no extra smoothing is applied that would continue moving the image after the lid stops.
 - Screen capture permission is requested only through the settings button. Without it, the app still reports the lid angle and provides the sample preview.
 - Login items use Apple's [`SMAppService.mainApp`](https://developer.apple.com/documentation/servicemanagement/smappservice/mainapp); desktop snapshots use [`SCScreenshotManager`](https://developer.apple.com/documentation/screencapturekit/scscreenshotmanager).
@@ -97,4 +98,4 @@ The default build is signed ad hoc for local use, with App Sandbox disabled for 
 
 To build a versioned release ZIP and SHA-256 checksum in `dist/`, run `./scripts/release.sh`. The version comes from `Resources/Info.plist`; the architecture comes from the built executable. Run `./scripts/test.sh` before publishing, and disclose signing/notarization status in the release notes. Release binaries are attached to GitHub Releases rather than committed to Git.
 
-The scripts prefer Command Line Tools without changing global `xcode-select`, working around the broken Xcode launcher found on this development machine. Set `DEVELOPER_DIR` to override. `scripts/test.sh` supplies the framework paths required by the installed Command Line Tools' Swift Testing runtime.
+The scripts prefer Command Line Tools without changing global `xcode-select`. If its Swift Package Manager cannot launch, they fall back to Xcode's standalone Swift toolchain while retaining the Command Line Tools SDK. They follow the selected `MacOSX.sdk` symlink rather than automatically choosing a leftover newer beta SDK, and use the matching toolchain's Swift Testing framework. Set `DEVELOPER_DIR` or `SDKROOT` to override developer tools or SDK selection.
