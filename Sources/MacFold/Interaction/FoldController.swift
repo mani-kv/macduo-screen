@@ -76,11 +76,11 @@ final class FoldController {
             })
         }
         observers.append(center.addObserver(forName: NSWorkspace.activeSpaceDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.reset() }
+            MainActor.assumeIsolated { self?.desktopChanged() }
         })
         observers.append(NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification,
                                                                object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.reset() }
+            MainActor.assumeIsolated { self?.desktopChanged() }
         })
         watchdog = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated {
@@ -227,6 +227,14 @@ final class FoldController {
 
     private func cancelCapture() { captureTask?.cancel(); captureTask = nil }
     private func reset() { session.reset(); cancelCapture(); overlay?.hide(); pendingFrame = false; failedFrames = 0 }
+
+    private func desktopChanged() {
+        // Discard the previous Space's image and any in-flight capture, then
+        // restore the effect without waiting for another sensor/slider event.
+        reset()
+        if let angle = previewAngle ?? angle { apply(angle) }
+        onStatus?()
+    }
 
     private func renderFrame(angle: Double) {
         if overlay?.render(angle: angle, progress: session.progress, configuration: settings.configuration) == true {
