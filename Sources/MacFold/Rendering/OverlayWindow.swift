@@ -22,7 +22,10 @@ final class OverlayWindow {
         self.renderer = renderer
         window = PassiveWindow(contentRect: .zero, styleMask: [.borderless], backing: .buffered, defer: false)
         window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.screenSaverWindow)))
-        window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle, .stationary]
+        // Joining desktop Spaces and joining other apps' fullscreen Spaces
+        // are separate policies. Explicitly opt into both for this overlay.
+        window.collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications,
+                                     .fullScreenAuxiliary, .ignoresCycle, .stationary]
         window.ignoresMouseEvents = true
         window.isReleasedWhenClosed = false
         window.hasShadow = false

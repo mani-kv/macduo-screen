@@ -16,7 +16,7 @@ final class DesktopPreviewWindowController: NSWindowController, NSWindowDelegate
                              styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = "Test Desktop"
         window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.screenSaverWindow)) + 1)
-        window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        window.collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications, .fullScreenAuxiliary]
         window.hidesOnDeactivate = false
         window.isReleasedWhenClosed = false
         window.center()
