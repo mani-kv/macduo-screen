@@ -6,7 +6,7 @@ The physical lid angle is the animation timeline: holding the lid holds the visu
 
 ## Download
 
-Download the Apple Silicon macOS 14+ app from [the 0.1.1 preview release](https://github.com/mani-kv/macduo-screen/releases/tag/v0.1.1). Unzip it, move **MacFold.app** to Applications, and open it. This preview is ad-hoc signed and **not notarized**; installation details and known limitations are in the [release notes](docs/releases/0.1.1.md).
+Download the Apple Silicon macOS 14+ app from [the 0.1.2 preview release](https://github.com/mani-kv/macduo-screen/releases/tag/v0.1.2). Unzip it, move **MacFold.app** to Applications, and open it. This preview is ad-hoc signed and **not notarized**; installation details and known limitations are in the [release notes](docs/releases/0.1.2.md).
 
 ## Run from source
 
