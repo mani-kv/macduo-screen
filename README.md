@@ -92,7 +92,7 @@ LidSensor / HIDAngleProvider → FoldController → FoldSession → OverlayWindo
 
 ## Prototype limits
 
-The sensor report is an undocumented hardware interface, so support must be detected on each Mac. This prototype does not prevent normal lid-close sleep. Full close/wake behavior, multiple Spaces, and end-to-end perceived latency need physical testing on the target setup. A snapshot freezes desktop content during the effect, so a video or clock underneath will jump back to its live state when reopening.
+The sensor report is an undocumented hardware interface, so support must be detected on each Mac. This prototype does not prevent normal lid-close sleep. The affected user confirmed that Test Desktop now works across desktop Spaces on the built-in display; see the [Spaces fix validation](docs/SPACES-FIX.md). Full close/wake behavior, full-screen Spaces, rapid Space switching while reopening, and end-to-end perceived latency still need physical testing on the target setup. A snapshot freezes desktop content during the effect, so a video or clock underneath will jump back to its live state when reopening.
 
 The default build is signed ad hoc for local use, with App Sandbox disabled for HID access. It is not notarized for distribution. For a distributable build, set `SIGNING_IDENTITY` to an installed Developer ID identity and complete Apple's notarization process. Builds use the host architecture.
 
