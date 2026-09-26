@@ -37,7 +37,13 @@ final class MetalRenderer: NSObject, MTKViewDelegate {
         if Bundle.main.bundleURL.pathExtension == "app" {
             // SwiftPM's generated accessor falls back to an absolute build
             // path. A distributed .app must load only its bundled resources.
-            shaderURL = Bundle.main.resourceURL?.appendingPathComponent("MacFold_MacFold.bundle/FoldShader.metal")
+            shaderURL = Bundle.main.resourceURL.flatMap { resources in
+                let bundleURL = resources.appendingPathComponent("MacFold_MacFold.bundle", isDirectory: true)
+                // Swift Build emits Contents/Resources inside the resource
+                // bundle; older SwiftPM releases emitted a flat directory.
+                return Bundle(url: bundleURL)?.url(forResource: "FoldShader", withExtension: "metal")
+                    ?? bundleURL.appendingPathComponent("FoldShader.metal")
+            }
         } else {
             shaderURL = Bundle.module.url(forResource: "FoldShader", withExtension: "metal")
         }

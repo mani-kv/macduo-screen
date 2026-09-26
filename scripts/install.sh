@@ -19,7 +19,9 @@ fi
 while IFS= read -r pid; do
   [[ -z "$pid" ]] || kill "$pid"
 done < <(pgrep -x MacFold || true)
-ditto dist/MacFold.app "$app_path"
+# Mirror the bundle so files removed or relocated by a new SwiftPM version
+# cannot survive an upgrade and invalidate the new code signature.
+/usr/bin/rsync -a --delete -- dist/MacFold.app/ "$app_path/"
 codesign --verify --strict "$app_path"
 open "$app_path" --args --settings "$@"
 echo "Installed and opened $app_path"

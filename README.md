@@ -6,7 +6,7 @@ The physical lid angle is the animation timeline: holding the lid holds the visu
 
 ## Download
 
-Download the Apple Silicon macOS 14+ app from [the 0.1.2 preview release](https://github.com/mani-kv/macduo-screen/releases/tag/v0.1.2). Unzip it, move **MacFold.app** to Applications, and open it. This preview is ad-hoc signed and **not notarized**; installation details and known limitations are in the [release notes](docs/releases/0.1.2.md).
+Download the Apple Silicon macOS 14+ app from [the 0.1.3 preview release](https://github.com/mani-kv/macduo-screen/releases/tag/v0.1.3). Unzip it, move **MacFold.app** to Applications, and open it. This preview is ad-hoc signed and **not notarized**; installation details and known limitations are in the [release notes](docs/releases/0.1.3.md).
 
 ## Run from source
 
@@ -92,7 +92,7 @@ LidSensor / HIDAngleProvider → FoldController → FoldSession → OverlayWindo
 
 ## Prototype limits
 
-The sensor report is an undocumented hardware interface, so support must be detected on each Mac. This prototype does not prevent normal lid-close sleep. Full close/wake behavior, multiple Spaces, and end-to-end perceived latency need physical testing on the target setup. A snapshot freezes desktop content during the effect, so a video or clock underneath will jump back to its live state when reopening.
+The sensor report is an undocumented hardware interface, so support must be detected on each Mac. This prototype does not prevent normal lid-close sleep. The affected user confirmed that Test Desktop now works across desktop Spaces on the built-in display; see the [Spaces fix validation](docs/SPACES-FIX.md). Full close/wake behavior, full-screen Spaces, rapid Space switching while reopening, and end-to-end perceived latency still need physical testing on the target setup. A snapshot freezes desktop content during the effect, so a video or clock underneath will jump back to its live state when reopening.
 
 The default build is signed ad hoc for local use, with App Sandbox disabled for HID access. It is not notarized for distribution. For a distributable build, set `SIGNING_IDENTITY` to an installed Developer ID identity and complete Apple's notarization process. Builds use the host architecture.
 
