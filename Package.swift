@@ -18,6 +18,7 @@ let package = Package(
                                            .linkedFramework("MetalPerformanceShaders"),
                                            .linkedFramework("ScreenCaptureKit"), .linkedFramework("ServiceManagement")]),
         .testTarget(name: "LidSensorTests", dependencies: ["LidSensor"]),
-        .testTarget(name: "FoldCoreTests", dependencies: ["FoldCore"])
+        .testTarget(name: "FoldCoreTests", dependencies: ["FoldCore"]),
+        .testTarget(name: "MacFoldTests", dependencies: ["MacFold"])
     ]
 )

@@ -13,8 +13,9 @@ final class DesktopPreviewWindowController: NSWindowController, NSWindowDelegate
     init(controller: FoldController) {
         self.controller = controller
         let window = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 460, height: 148),
-                             styleMask: [.titled, .closable], backing: .buffered, defer: false)
+                             styleMask: [.titled, .closable, .nonactivatingPanel], backing: .buffered, defer: false)
         window.title = "Test Desktop"
+        window.isFloatingPanel = true
         window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.screenSaverWindow)) + 1)
         window.collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications, .fullScreenAuxiliary]
         window.hidesOnDeactivate = false

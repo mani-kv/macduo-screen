@@ -1,9 +1,29 @@
 import AppKit
 import FoldCore
 
-private final class PassiveWindow: NSWindow {
+final class PassiveOverlayPanel: NSPanel {
     override var canBecomeKey: Bool { false }
     override var canBecomeMain: Bool { false }
+
+    init() {
+        // Spaces membership alone does not give NSWindow nonactivating panel
+        // behavior. Present independently of Settings and the active app:
+        // https://developer.apple.com/forums/thread/826308
+        super.init(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel],
+                   backing: .buffered, defer: false)
+        isFloatingPanel = true
+        level = .screenSaver
+        collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications,
+                              .fullScreenAuxiliary, .ignoresCycle, .stationary]
+        ignoresMouseEvents = true
+        isReleasedWhenClosed = false
+        hasShadow = false
+        backgroundColor = .black
+        isOpaque = true
+        hidesOnDeactivate = false
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) is unavailable") }
 }
 
 final class OverlayWindow {
@@ -20,18 +40,7 @@ final class OverlayWindow {
 
     init(renderer: MetalRenderer) {
         self.renderer = renderer
-        window = PassiveWindow(contentRect: .zero, styleMask: [.borderless], backing: .buffered, defer: false)
-        window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.screenSaverWindow)))
-        // Joining desktop Spaces and joining other apps' fullscreen Spaces
-        // are separate policies. Explicitly opt into both for this overlay.
-        window.collectionBehavior = [.canJoinAllSpaces, .canJoinAllApplications,
-                                     .fullScreenAuxiliary, .ignoresCycle, .stationary]
-        window.ignoresMouseEvents = true
-        window.isReleasedWhenClosed = false
-        window.hasShadow = false
-        window.backgroundColor = .black
-        window.isOpaque = true
-        window.hidesOnDeactivate = false
+        window = PassiveOverlayPanel()
         // Metal completes the image offscreen; AppKit presents it using the
         // normal window compositor, without a fullscreen CAMetalLayer drawable.
         view.imageScaling = .scaleAxesIndependently
@@ -90,7 +99,8 @@ final class OverlayWindow {
         // angle directly; there is no duration-based animation or tail.
         window.alphaValue = FoldConfiguration.overlayOpacity(for: progress)
         view.needsDisplay = true
-        if !window.isVisible {
+        // isVisible also includes windows on an inactive Space.
+        if !window.isVisible || !window.isOnActiveSpace {
             window.displayIfNeeded()
             window.orderFrontRegardless()
         }
